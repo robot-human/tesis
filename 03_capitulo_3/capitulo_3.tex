@@ -1,0 +1,538 @@
+% Marco Teorico.
+\chapter{Procesamiento y representaci\'on de la señal de voz} \label{chap:na}
+
+\section{Introducci\'on}
+
+
+El procesamiento de la señal de voz en el reconocimiento de locutor, tiene como finalidad obtener una representaci\'on de la señal de voz que permita diferenciar con la mayor precisi\'on posible entre distintos locutores. Para lograr esto es necesario que la señal de voz pase por una cadena de procesos que pueden englobarse en las siguientes etapas:\\
+
+\textbf{Captura.-} Para poder procesar la voz, es necesario capturarla y digitalizarla, la captura se realiza generalmente con un micr\'ofono mediante un proceso de transducci\'on se convierten las ondas mec\'anicas en voltaje, despu\'es se digitaliza, pasando de voltaje a c\'odigo binario, lo que hace posible el procesamiento computacional.\\
+
+\textbf{Pre-procesamiento.-} Posteriormente a la etapa de captura, el audio tiene que ser preparado para eliminar efectos no deseados o para que sea mas manejable, el objetivo es mejorar la calidad de la señal, en esta etapa se suele eliminar ruidos o distorsiones, eliminar o reducir reverberaciones, separar audio proveniente de distintas fuentes, detecci\'on de la actividad de voz, entre otros.\\ 
+
+\textbf{Extracci\'on de caracter\'isticas.-} Finalmente, se busca extraer par\'ametros de la señal que contengan exclusivamente la informaci\'on necesaria para realizar un an\'alisis que permita resolver un problema o realizar una tarea espec\'ifica, e idealmente se logre descartar el resto de informaci\'on. Estos par\'ametros pueden estar tanto en el dominio del tiempo como en el de las frecuencias y se denomina vector de caracter\'isticas \cite{schuller}.\\
+\indent
+
+
+\subsection{Sonido}
+El sonido son ondas mec\'anicas que se propagan a trav\'es de un medio generalmente el aire (aunque puede ser un  l\'iquido o s\'olido) y son producidas por una fuente que vibra. Las vibraciones perturban las mol\'eculas al rededor de la fuente alejandolas y juntandolas en sincronia con las vibraciones, de esta manera se producen pequeñas regiones en el medio en que la presi\'on es menor (rarefacci\'on) y regiones en la que la presi\'on es mayor (compresi\'on). Estas regiones en que se alterna rarefacci\'on y compresi\'on del medio, se propagan desde la fuente en todas direcciones produciendo sonido, la velocidad de propagaci\'on en el aire es de aproximadamente 343.2 m/s, esta es independiente de las caracter\'isticas de la onda y depende exclusivamente del medio y de sus condiciones, viajando mas r\'apido en medios con mayor densidad o mayor temperatura. La interacci\'on entre rarefacci\'on y compresi\'on en el tiempo genera patrones denominados forma de onda, las caracter\'isticas de la forma de onda son fundamentales en el resultado sonoro.\\ 
+
+La forma de onda puede componerse de una unidad de forma mas pequeña que se repite constantemente llamada ciclo, el tiempo que toma completar un ciclo se llama peri\'odo, a este tipo de ondas se les llama ondas peri\'odicas, los sonidos que entran en el rango de la audici\'on humana tienen periodos de entre 0.00005 y 0.05 segundos aproximadamente. La velocidad en que se repite el ciclo es la frecuencia de onda, la unidad de medida de frecuencia son los Hertz (Hz), esta unidad representa el n\'umero de ciclos por segundo, matem\'aticamente la frecuencia es el inverso del periodo, es decir $f = \frac{1}{p}$. El rango de audici\'on humana expresado en Hertz va de los 20Hz a los 20KHz, es decir la frecuencia mas baja en la audici\'on humana es de 20 ciclos por segundo y llega hasta 20 mil ciclos por segundo, siendo esta la mas alta. El rango de audici\'on humana es aproximado ya que depende de varios factores, como las condiciones de escucha, o la edad del escucha tendiendo a reducirse este rango con la edad.\\
+
+Otra caracter\'istica importante de las ondas sonoras es la amplitud, esta es la magnitud del cambio de presi\'on en el medio causado por la rarefacci\'on y la compresi\'on, esta din\'amica genera una cierta fuerza sobre el medio ya que las mol\'eculas se empujan entre si colectivamente. La amplitud se mide en Newtons por metro cuadrado (N/$m^2$), esto es la cantidad de fuerza que es aplicada en una \'area determinada. La m\'inima amplitud audible es de aproximadamente 0.00002 N/$m^2$, mientras que del otro lado del rango una amplitud de 200 N/$m^2$ es el l\'imite cuando un sonido comienza a ser percibido no s\'olo por el oido sino por el cuerpo entero   \cite{dodge}.\\
+
+%Es conveniente diferenciar el concepto de onda sonora del de evento sonoro, siendo el primero una abstracci\'on fenomenol\'ogica del segundo. Las ondas sonoras tienen cuatro propiedades, frecuencia, fase, amplitud y espectro arm\'onico, un evento sonoro tiene dos propiedad mas, la fuente donde se origina, y la duraci\'on, estas dos propiedades ubican al evento sonoro en el espacio y en el tiempo. La fuente debe ser \'unica y por tener una ubicaci\'on espacial, define la posici\'on del evento sonoro, la duraci\'on define la ubicaci\'on temporal del evento sonoro, es decir tiene un punto inicial y final, la frecuencia, fase,  amplitud, espectro arm\'onico e incluso la fuente pueden modificarse en este intervalo, y esta din\'amica es lo que caracteriza al evento sonoro.\\
+
+\subsection{Señales de audio}
+
+El t\'ermino audio es entendido como una representaci\'on del sonido que tiene como finalidad transformar, transmitir, reproducir y almacenar sonidos. Puede ser segmentado en tres categor\'ias: m\'usica, habla y sonido en general, con aplicaciones en m\'usica, telecomunicaciones, procesamiento y s\'intesis de voz y an\'alisis y s\'intesis de sonidos \cite{schuller}.\\
+
+Las señales de audio pueden ser multicanal como es el caso de los sistemas estereo o sistemas 5.1, o en el caso de las señales mono o las señales telef\'onicas, de un solo canal. A excepci\'on de señales de audio muy simples como lo son tonos generados por osciladores, las señales de audio pueden llegar a ser muy complejas como se observa en la figura 3.1 en general no son peri\'odicas ni determin\'isticas, esto quiere decir que la forma de onda y la intensidad cambian constantemente y no es posible representar la señal por medio de una f\'ormula matem\'atica.\\ 
+
+\begin{figure}[H]
+	\begin{center}
+	\includegraphics[scale=0.45,type=png,ext=.png,read=.png]{imagenes/center_voice} \\
+	\caption{Fragmento de señal de voz digitalizada.}
+	\label{fig:diag_recon_locutor}
+	\end{center}
+\end{figure}
+
+Las señales de audio comunmente se encuentran en el dominio del tiempo, es decir como cambios de presi\'on o de voltaje en el tiempo, sin embargo tambi\'en pueden caracterizarse en t\'erminos de su contenido de frecuencias o espectro arm\'onico, esta representaci\'on se obtiene usando la transformada de Fourier \cite{kamen} y visualizarse con un espectrograma de frecuencias, es muy \'util tener ambas representaciones ya que en algunos casos es preferible una sobre la otra, dependiendo del an\'alisis que se desee realizar.\\
+
+La señal puede ser el\'ectrica an\'alogica, esta representaci\'on tiene la caracter\'istica de ser continua, puede ser sintetizada con osciladores o registrada con micr\'ofonos, en un proceso de transducci\'on en el que el sonido pasa de ser fluctuaciones de presi\'on en el aire a fluctuaciones de voltaje el\'ectrico. Tambi\'en puede representarse num\'ericamente a trav\'es de un proceso de muestreo y cuantizaci\'on que se realiza con un convertidor anal\'ogico digital, esta representaci\'on en contraste con la anterior es discreta. Este \'ultimo caso es el que resulta de mayor relevancia en este trabajo, en la siguiente secci\'on se presentan algunas t\'ecnicas b\'asicas de procesamiento digital de audio.\\
+
+
+
+
+\section{Procesamiento de audio digital}
+
+\subsection{Procesamiento de señales digitales}
+El procesamiento de señales digitales es un conjunto de t\'ecnicas empleadas para operar matem\'atica y computacionalmente una señal discreta codificada num\'ericamente con la finalidad de modificarla o mejorarla en alg\'un sentido, y que facilite el proceso de extraer, transmitir o almacenar informaci\'on. Esta tecnolog\'ia ha generado un gran imp\'acto en muchas \'areas del conocimiento con m\'ultiples aplicaciones pr\'acticas.\\
+
+El procesamiento de señales digitales surge en los años sesenta, cuando las computadoras comenzaron a estar disponibles, aunque eran muy costosas y con limitaciones, inmediatamente se evidenci\'o su potencial. En esa \'epoca sus aplicaciones eran principalmente para radares militares, exploraci\'on espacial y aplicaciones m\'edicas \cite{smith}, actualmente el procesamiento de señales digitales ha llegado a un nivel de madurez gracias al teorema de muestreo, la transformada r\'apida de Fourier y a la accesibilidad y evoluci\'on de las capacidades de c\'omputo,  sus aplicaciones se encuentran en todos lados, favoreciendo el desarrollo en m\'ultiples disciplinas cient\'ificas, industriales y comerciales, con notable desarrollo en telecomunicaciones, procesamiento de voz y procesamiento de audio en general \cite{li-cox}.\\
+
+Las señales son mediciones o representaciones de fen\'omenos f\'isicos y en su mayor\'ia son de naturaleza continua tanto en magnitud como en el tiempo, para poder aplicar los principios del procesamiento de señales digitales, deben ser convertidas a formato digital, tienen que pasar por un proceso de muestreo y cuantizaci\'on en donde pierden su naturaleza continua. Este proceso toma tiempo y aunque en la mayor\'ia de casos es insignificante, considerando que los sistemas anal\'ogicos realizan sus procesos en tiempo real, esto se convierte en una desventaja del audio digital sobre el an\'alogo, sobre todo en casos donde es necesario trabajar a altas frecuencias o con un amplio ancho de banda, ya que requieren procesar una cantidad mayor de datos. A pesar de esto en general es preferible trabajar con señales digitales, ya que ofrecen mayor precisi\'on, flexibilidad, son menos costosos de implementar y la informaci\'on digital es m\'as f\'acil de almacenar.\\
+
+\subsection{Convertidor de audio anal\'ogico digital}
+
+Para procesar computacionalmente una señal de audio es necesario transformarla de su forma an\'aloga a su forma digital, es decir convertir una señal continua en amplitud y en el tiempo en una señal discreta en amplitud y en el tiempo, esta conversi\'on se realiza con un convertidor de audio anal\'ogico digital.\\
+Este proceso se ilustra en la figura() y consta de los siguientes tres pasos:\\
+
+\begin{itemize}
+	\item \textbf{Muestreo.- }En este paso se convierte una señal que es continua en el tiempo, en discreta tomando muestras de la señal a intervalos constante de tiempo, es necesario definir la frecuencia de muestreo, es decir el n\'umero de muestras que se capturan cada segundo.
+	\item \textbf{Cuantizaci\'on.- }En la cuantizaci\'on se discretiza la amplitud de la señal restringiendo los valores que pueden ser registrados a un conjunto finito y se asigna de este conjunto el valor mas cercano al valor real de la señal, en este paso se tiene que definir la cantidad de valores  que puede tomar la señal digital, esto se define en n\'umero de bits.
+	\item \textbf{Codificaci\'on.- }En esta etapa se convierten los valores n\'umericos, que estan en alg\'un formato de enteros o flotantes a un formato binario, generalmente este proceso ocurre simultaneamente al de cuantizaci\'on.
+\end{itemize}
+
+Este proceso restringe la cantidad de informaci\'on que ser\'a registrada, y para poder realizar este proceso de forma \'optima hay que tomar en cuenta algunas consideraciones, ya que es necesario entender que informaci\'on se necesita capturar y que informaci\'on puede ser descartada \cite{smith}. Los convertidores de audio anal\'ogico digital comunmente utilizan frecuencias de muestreo que pueden ir desde 44.1 KHz a 192 KHz y profundidad de bits que pueden ir desde 8 hasta 32 bits, estas configuraciones son empleadas en audio de alta fidelidad, en telecomunicaciones suelen emplearse frecuencias de muestreo mas bajas, por lo que son configuraciones que permiten realizar los procesos correctamente.\\
+
+\begin{figure}[H]
+	\begin{center}
+	\includegraphics[scale=0.45,type=png,ext=.png,read=.png]{imagenes/diagrama05} \\
+	\caption{Fragmento de señal de voz digitalizada.}
+	\label{fig:diag_recon_locutor}
+	\end{center}
+\end{figure}
+
+Como se ve en la figura, previo a realizar la conversi\'on de señal an\'aloga a digital,  la señal an\'aloga debe pasar por un filtro pasa bajas y por un m\'odulo de muestreo y retenci\'on para poder discretizar la señal. El filtro tiene como finalidad restringir las frecuencias que ser\'an capturadas ya que frecuencias mayores a un medio de la frecuencia de muestreo no pueden ser interpretadas correctamente. El circuito de muestreo y retenci\'on es un dispositivo an\'alogo que recibe una señal continua y retiene el valor a un nivel constante por un lapso determinado de tiempo, este circuito es necesario en un convertidor anal\'ogico digital, para evitar variaciones en la señal que puedan corromper el proceso de conversi\'on ya que la amplitud de la señal an\'aloga se modifica constantemente y el proceso de conversi\'on toma tiempo, esto puede provocar inconsistencias en el proceso de conversi\'on y generar errores en el registro de la señal.\\
+
+Una vez realizado el procesamiento o almacenamiento de la señal digital, es necesario regresar la señal a su representaci\'on an\'aloga, este proceso se realiza con un convertidor digital anal\'ogico, es el proceso inverso al de digitalizaci\'on, y se realiza interpolando los valores digitales, esta interpolaci\'on puede realizarse a trav\'es de varias t\'ecnicas, la mas com\'un es la conversion de orden cero, aunque tambien puede realizarse una interpolaci\'on lineal o cuadratica \cite{proakis}. En este trabajo s\'olo es relevante la digitalizaci\'on por lo que no se profundizar\'a en la conversi\'on digital anal\'ogica.\\
+
+
+\subsubsection{Muestreo}
+El primer paso del muestreo es la discretizaci\'on de la señal en el tiempo, el voltaje de la señal anal\'oga fluctua constantemente y a cada instante de tiempo su valor cambia, es imposible para la computadora capturar el valor en cada instante, es por esto que se toman registros de la señal en intervalos constantes de tiempo, el resultado del proceso de muestreo es una secuencia de n\'umeros correspondientes al voltaje de la señal anal\'oga en cada tiempo muestreo, este m\'etodo de representar una señal an\'aloga se conoce como modulaci\'on de c\'odigo de pulso (PCM)\cite{dodge}, aunque existen otros m\'etodos para realizar el muestreo, como el muestreo aleatorio, la modulaci\'on de ancho de pulso o el muestreo c\'iclico, el mas com\'un en el procesamiento de voz es el muestreo peri\'odico \cite{beigi2011}. \\
+
+Como se mencion\'o anteriormente el muestreo por modul\'on de c\'odigo de pulso es un muestreo peri\'odico, es decir, el tiempo \begin{math} \Delta \end{math}t que transcurre entre dos registros es fijo y se denomina periodo de muestreo, la frecuencia de muestreo \begin{math} f = \frac{1}{\Delta t} \end{math} es el inverso del periodo de muestreo es expresado en Hertz y representa el n\'umero de registros capturados en un segundo.\\
+
+Una mayor frecuencia de muestreo, resulta en una representaci\'on mas precisa de la señal continua, sin embargo la cantidad de informaci\'on que se tiene que almacenar o procesar ser\'a mayor, y se necesita un convertidor anal\'ogico digital que funcione a mayor velocidad. Podr\'ia pensarse que cualquier cantidad menor a una infinidad de muestras generar\'a errores en la señal digital y como se ha mencionado anteriormente esto no es posible computacionalmente. Afortunadamente el an\'alisis matem\'atico del proceso de muestreo proporciona las condiciones necesarias para conseguir una representaci\'on digital de la señal an\'aloga sin perdida de informaci\'on, esto quiere decir que la señal puede reconstruirse a partir de las muestras por lo que se considera un proceso reversible, las condiciones bajo las cuales es posible dependen exclusivamente del ancho de banda de frecuencias de la señal y de la frecuencia de muestreo \cite{dodge}.\\ 
+
+Considerando lo anterior y buscando optimizar el proceso de muestreo, en el sentido de conseguir una representaci\'on de la señal sin perdida de informaci\'on sin tener que almacenar o procesar un vol\'umen de informaci\'on excesiva, surge la pregunta: ¿Cu\'al es la frecuencia de muestreo m\'inima para representar correctamente una señal?. El teorema de Nyquist-Shannon nombrado as\'i en honor a Harry Nyquist y Claude Shannon, responde esta pregunta y se enuncia a continuaci\'on.\\
+
+\noindent
+\textbf{\textit{Teorema de muestreo.- }}Una señal continua \begin{math}x(t)\end{math} registrada con una frecuencia de muestreo \begin{math}f_s\end{math} de la cu\'al se obtien una copia a tiempo discreto \begin{math}x[n]\end{math}, puede reconstruirse perfectamente a su forma original \begin{math}x(t)\end{math} a partir de la serie \begin{math}x[n]\end{math} si,  \begin{math}f_s > 2f_{max}\end{math}, donde \begin{math}f_{max}\end{math} es la m\'axima frecuencia contenida en el espectro de la señal \begin{math}x(t)\end{math}.\\
+
+A la frecuencia \begin{math}f_N = \frac{1}{2}f_s\end{math} se le denomina frecuencia de Nyquist, o limite de Nyquist, esta frecuencia es el limite superior del ancho de banda del espectro armonico de la señal. Como se mencion\'o anteriormente las frecuencias en la señal continua que sean superiores a la frecuencia de Nyquist, no ser\'an interpretadas correctamente al momento de discretizarse, esto ocurre por un efecto llamado Aliasing que tiene que ser considerado y tratado, previo a la etapa de muestreo \cite{smith}.\\
+
+\noindent
+\textbf{\textit{Aliasing}}\\
+\indent
+
+El efecto de \textit{aliasing} se produce cuando la señal contiene frecuencias superiores a la frecuencia de Nyquist y no se logra una representaci\'on fiel de dichas frecuencias, esto sucede por que para poder interpolar correctamente una onda se necesita que al menos se tomen dos registros por cada ciclo de onda, en caso de que esto no suceda la frecuencia de la onda ser\'a interpretada como una frecuencia mas baja, esta frecuencia mas baja se llama Alias y depende de la frecuencia original y la frecuencia de muestreo, la frecuencia alias se encontrar\'a debajo de la frecuencia de Nyquist. Si se produce este efecto, la señal discreta tendr\'a un espectro arm\'onico muy distinto al de la señal continua ya que las frecuencias superiores a la frecuencia de Nyquist no s\'olo no estar\'an presentes en la señal discreta, si no que por cada una de estas frecuencias se introducir\'a en la señal discreta su Alias, es decir frecuencias que en la señal original no estaban presentes, por esta raz\'on el efecto de Aliasing es indeseable y debe ser eliminado.\\
+
+En la figura 3.2 se muestra el proceso de muestreo para una señal generada por una funci\'on seno, la frecuencia de la señal es equivalente a 0.91 por ciento de la frecuencia de muestreo, es decir, est\'a por encima de la frecuencia de Nyquist, es f\'acil ver que los valores tomados al muestrear la señal representan una frecuencia mas baja que la frecuencia de la señal. Adicionalmente al cambio en la frecuencia, este efecto tambi\'en puede resultar en un cambio de fase, en la figura se observa un cambio de fase de $180^{\circ}$. Solo es posible que se produzcan dos tipos de cambio de fase $0^{\circ}$ (se conserva la fase) y $180^{\circ}$ (inversi\'on de fase). Para  señales con frecuencia de 0 a 0.5, 1.0 a 1.5, 2.0 a 2.5, etc. en relaci\'on a la frecuencia de muestreo no se produce cambio de fase, para frecuencias de 0.5 a 1.0, 1.5 a 2.0, 2.5 a 3.0 etc. con relaci\'on a la frecuencia de muestreo se produce inversi\'on de fase \cite{smith}.\\
+
+\begin{figure}[H]
+	\begin{center}
+	\includegraphics[scale=0.4,type=png,ext=.png,read=.png]{imagenes/aliasing} \\
+	\caption{Efecto de aliasing producido al registrar una señal con frecuencia mayor a la frecuencia de Nyquist.}
+	\label{fig:diag_recon_locutor}
+	\end{center}
+\end{figure}
+
+La forma en que se elimina este efecto es introduciendo un filtro pasa bajas antes de realizar el muestreo como se muestra en la figura, este filtro tiene como finalidad eliminar las frecuencias superiores a la frecuencia de Nyquist, de esta manera no se introducen frecuencias alias, y se logra una representaci\'on de la señal correcta en el ancho de frecuencias que no son eliminadas por el filtro.\\
+
+
+
+
+\subsubsection{Cuantizaci\'on}
+
+El proceso mediante el cu\'al se convierte una señal de amplitud continua en una de amplitud discreta se llama cuantizaci\'on, este consiste en restringir los valores que pueden ser registrados de tal manera que se asigna un valor cercano al valor real de la amplitud de la señal continua, este proceso a diferencia del de muestreo es no reversible, es decir al realizarlo se pierde informaci\'on. Al n\'umero de posibles valores se le llama profundidad de bits o resoluci\'on, y se expresa en n\'umero de bits, por ejemplo una resoluci\'on de 16 bits ofrece 65,536 posibles valores enteros que van de -32,768 a 32,767 incluyendo al 0, similar al caso del tiempo continuo, a mayor resoluci\'on se necesita mas recursos de procesamiento y almacenamiento, en el caso contrario en que la resoluci\'on sea demasiado baja se produce distorsi\'on de la señal.\\
+
+
+El conjunto de valores disponibles que puede tomar la señal digital se denomina niveles de cuantizaci\'on, y la distancia entre dos valores sucesivos se conoce como resoluci\'on de cuantizaci\'on o tamaño de paso de cuantizaci\'on y se suela denotar por $\Delta$. Existen varias formas de realizar la cuantizaci\'on, la m\'as com\'un es por truncamiento en donde se asigna a cada muestra el nivel de cuantizaci\'on inmediato inferior al valor real, otra forma mas conveniente es por redondeo, en este m\'etodo se asigna el nivel de cuantizaci\'on mas cercano al valor real \cite{proakis}. \\
+
+Se denota como \begin{math}Q[x(n)]\end{math} a la operaci\'on de cuantizaci\'on sobre el conjunto de muestras \begin{math}x(n)\end{math} y a la secuencia de muestras cuantizadas se denota como \begin{math}x_q(n)\end{math}, por lo que se tiene:
+\begin{align}
+	x_q(n) = Q[x(n)]
+\end{align}
+
+A la diferencia entre la muestra cuantizada y el valor real se le denomina error de cuatizaci\'on o ruido de cuantizaci\'on y se denota por \begin{math}e_q(n)\end{math}, es decir:
+\begin{align}
+	e_q(n) = x_q(n) - x(n)
+\end{align}
+
+Considerando que la cuantizaci\'on se realiza por redondeo, y suponiendo que el valor de la amplitud de la señal se encuentra dentro del rango del cuantizador, se denomina al error resultante, error granular y est\'a acotado de la siguiente forma:
+\begin{align}
+	-\frac{\Delta}{2} < e_q(n) \leq \frac{\Delta}{2}
+\end{align}
+
+Cuando el valor de la señal cae fuera del rango de quantizaci\'on, este tipo de error no est\'a acotado, por lo que puede distorsionar severamente la señal, este error se denomina error de sobrecarga o de clipeo, en general se asume que este tipo de error no estar\'a presente ya que se puede resolver reescalando el rango de la señal para que los valores est\'en dentro del rango de cuantizaci\'on.\\
+
+Lo mas importante a tener en cuenta es el error que se introduce al realizar este proceso, en el modelo de error bajo ciertas condiciones se asume que se distribuye normal con media cero y desviaci\'on standard $\Delta$/$\sqrt{12}$ o aproximadamente 0.29$\Delta$, por ejemplo una resoluci\'on de 8 bits introducir\'a un ruido en rms de 0.29/256 o aproximadamente 1/900, mientras que para una resoluci\'on de 16 bits se introduce un ruido de 0.29/65536 $\approx$ 1/14000 \cite{smith}. Para elegir correctamente la resoluci\'on es necesario conocer la relaci\'on señal/ruido de la señal anal\'oga, ya que si esta es mayor que la relaci\'on señal/rudio de la señal de entrada, el error es no significativo y la señal puede ser reconstruida casi perfectamente despu\'es de la cuantizaci\'on.\\
+
+
+
+\subsubsection{Codificaci\'on}
+La codificaci\'on es el \'ultimo paso en el proceso de digitalizar una señal an\'aloga, aunque en general se realiza al mismo tiempo que la cuntificaci\'on, en este paso se asigna un n\'umero binario a cada nivel de cuantizaci\'on, esta asignaci\'on debe ser un mapeo biyectivo, es decir a cada nivel se le asigna un \'unico valor binario y dos niveles no pueden compartir el mismo valor, por lo tanto si tenemos L niveles de cuantizaci\'on, se necesitan al menos L distintos n\'umeros binarios para realizar la codificaci\'on \cite{proakis}, es por esto que a la resoluci\'on en general se le define por su n\'umero o profundidad de bits.\\
+
+Aunque existen distintos tipos de esquemas de codificaci\'on y es un proceso importante a tener en cuenta, sobre todo para realizar el procesamiento y al momento de realizar la decodificaci\'on, este no tiene ning\'un efecto en el rendimiento de la cuantificaci\'on o en el procesamiento, por lo que no se realiza mayor menci\'on de la codificaci\'on.\\
+
+
+
+\subsection{Transformada de Fourier}
+
+En 1807 el matem\'atico franc\'es Jean Baptist Fourier estudiando la propagaci\'on de calor a trav\'es de ondas sinosiodales para representar la distribuci\'on de temperatura, publica un art\'iculo en donde propone que cualquier funci\'on peri\'odica puede ser representada como la suma de un conjunto de funciones trigonom\'etricas. Esta afirmaci\'on result\'o muy controversial en su \'epoca ya que algunos de sus colegas no estaban convencidos de que se cumpliera en todos los caso y no permitieron que se publicara el art\'iculo, esta controversia estaba bien justificada ya que existen funciones que no pueden ser representadas de manera ex\'acta usando esta t\'ecnica, sin embargo pueden aproximarse a tal grado de que la diferencia sea insignificante, en el caso de señales discretas, la representaci\'on de la señal siempre es exacta \cite{smith}. Con el paso del tiempo ha quedado claro la utilidad de esta teor\'ia y la gran cantidad de aplicaciones.\\
+
+La transformada de Fourier es la representaci\'on de una funci\'on como una suma de funciones trigonom\'etricas de distintas frecuencias, fases y amplitudes, a estas funciones se les llama componentes arm\'onicos o simplemente arm\'onicos. Esta transformaci\'on traduce una funci\'on cuya variable independiente es generalmente el tiempo, en otra donde la variable independiente es la frecuencia, es por esto que se dice que transforma una funci\'on del dominio del tiempo al dominio de las frecuencias. Esta descomposici\'on es muy importante en el an\'alisis funcional, procesamiento de señales digitales y en el an\'alisis de sistemas lineales invariantes en el tiempo ya que bajo estos sistemas una funci\'on sinosoidal siempre conserva su forma y frecuencia y s\'olo modifica su fase y amplitud \cite{proakis}.\\ 
+
+Esta representaci\'on se lleva a cabo encontrando la amplitud y la fase de cada una de las frecuencias que componen a la funci\'on, esto se logra aplicando el producto punto entre la funci\'on y cada uno de los arm\'onicos, de esta forma se logran aislar las frecuencias que componen a una funci\'on, esto funciona por que las funciones trigonom\'etricas de distintas frecuencias son ortogonales, por lo que el producto punto entre distintas frecuencias es cero \cite{ellis}.\\
+
+Existen cuatro tipos de transformada de Fourier que responden a los cuatro tipos b\'asicos de señales \cite{smith}. Una señal puede ser peri\'odica y no peri\'odica, y como se ha mencionado anteriormente puede ser continua o discreta, las combinaci\'ones de estas dos caracter\'isticas resulta en los cuatro tipos b\'asicos de señales y en las distintas versiones de las transformada de Fourier:
+\begin{itemize}
+	\item[] \textbf{Transformada de Fourier}\\
+	Esta versi\'on se usa en caso de tener \textbf{señales continuas aperi\'odicas} y se define como:
+	\begin{align}
+		X(\omega) =  \int_{-\infty}^{\infty} x(t)e^{-j\omega t} \,dt
+	\end{align}
+	\setstretch{0.05}
+	\begin{align*}
+		\omega \in (-\infty,\infty)
+	\end{align*}
+	\setstretch{1.25}
+	\item[] \textbf{Serie de Fourier}\\
+	Esta versi\'on se usa en caso de tener \textbf{señales continuas peri\'odicas} y se define como:
+	\begin{align}
+		X(k) =  \int_{0}^{P} x(t)e^{-j\omega_{k} t} \,dt
+	\end{align}
+	\setstretch{0.05}
+	\begin{align*}
+		k = -\infty, ..., \infty
+	\end{align*}
+	\setstretch{1.25}
+	\item[] \textbf{Transformada de Fourier a Tiempo Discreto}\\
+	Esta versi\'on se usa en caso de tener \textbf{Señales discretas aperi\'odicas}  y se define como
+	\begin{align}
+		X(\omega) = \sum_{n=-\infty}^{\infty} x(n)e^{-j\omega n}
+	\end{align}
+	\setstretch{0.05}
+	\begin{align*}
+		\omega \in (-\pi,\pi)
+	\end{align*}
+	\setstretch{1.25}
+	\item[] \textbf{Transformada Discreta de Fourier}\\
+	Esta versi\'on se usa en caso de tener \textbf{Señales discretas peri\'odicas}  y se define como\\
+	\begin{align}
+		X(k) = \sum_{n=0}^{N - 1} x(n)e^{-j\omega_{k} n}
+	\end{align}
+	\setstretch{0.05}
+	\begin{align*}
+		k = 0, ..., N - 1
+	\end{align*}
+	\setstretch{1.25}
+	\setlength{\parskip}{2em}
+\end{itemize}
+
+Con estos cuatro casos es posible encontrar la representaci\'on espectral de cualquier funci\'on ya que siempre va a caer en alguno de estos, en el contexto de este trabajo s\'olo es relevante la transformada discreta de Fourier, ya que este caso es el que se aplica en señales discretas y finitas que son el tipo de señales con que se trabaja en el procesamiento digital.\\
+
+%Para ganar un poco de intuici\'on sobre las f\'ormulas anteriores, es claro que para señales continuas se tiene que integrar, para señales aperiodicas el   tomemos una señal peri\'odica, las frecuencias que componen esta señal son m\'ultiplos de la frecuencia fundamental de la señal, esto es as\'i por que solo estas frecuencias completaran un n\'umero exacto de ciclos dentro del periodo de la señal, .\\
+
+\noindent
+\textbf{Transformada inversa}\\
+\indent
+Expresar una funci\'on en t\'erminos de sus frecuencias se llama an\'alisis de Fourier y por ser una representaci\'on alterna de la funci\'on es un proceso reversible, es decir a partir de una serie de Fourier que se encuentra en el dominio de las frecuencias, siempre se puede pasar al dominio del tiempo expl\'icitamente, esto se realiza con la transformada inversa de Fourier mediante un proceso llamado s\'intesis de Fourier, en donde simplemente se suma el valor de cada uno de los arm\'onicos en cada instante de tiempo. Ambas representaciones la del dominio del tiempo y el dominio de las frecuencias se denominan el par de transformaci\'on y son representaciones equivalentes de la misma funci\'on \cite{ellis} 
+
+
+\subsubsection{Propiedades}
+La transformada de Fourier y la transformada inversa de Fourier es la relaci\'on que guarda una señal en sus dos representaciones, el dominio del tiempo y el de las frecuencias, y cualquier cambio que sufra la señal en alguno de sus dominios se ver\'a reflejado en el otro, es decir, cualquier operaci\'on que se realice a la señal en alguno de sus dominios, se ver\'a reflejada de alguna forma en el dominio opuesto, la relaci\'on en que un cambio matem\'atico en un dominio produce un cambio en el dominio opuesto son las propiedades de la transformada de Fourier, estas propiedades resultan muy \'utiles ya que alguna operaci\'on puede resultar m\'as sencilla de realizar si se cambia de dominio, si este es el caso se suele cambiar de dominio aplicar la operaci\'on y volver a cambiar de dominio. A continuaci\'on se enlistan algunas de las propiedades:\\ 
+
+Sean f(t) y g(t) tales que: f(t) $\longleftrightarrow$ F($\omega$) y g(t) $\longleftrightarrow$ G($\omega$), entonces se cumplen las siguientes propiedades:\\
+
+\noindent
+\textbf{\textit{Linealidad}}\\
+\indent
+\setstretch{0.05}
+\begin{align*}
+	af(t) + bg(t) \longleftrightarrow aF(\omega) + bG(\omega)
+\end{align*} 
+\setstretch{1.25}
+
+\noindent
+\textbf{\textit{Translaci\'on}}\\
+\indent
+\setstretch{0.05}
+\begin{align*}
+	 f(t-t_{0}) \longleftrightarrow e^{-j\omega t_{0}}F(\omega)\\
+\end{align*} 
+\setstretch{1.25}
+
+\noindent
+\textbf{\textit{Cambio de escala}}\\
+\indent
+\setstretch{0.05}
+\begin{align*}
+	f(at) \longleftrightarrow \frac{1}{\left| a \right|}F(\frac{\omega}{a})\\
+\end{align*} 
+\setstretch{1.25}
+
+\noindent
+\textbf{\textit{Convoluci\'on}}\\
+\indent
+\setstretch{0.05}
+\begin{align*}
+	 f(t)*g(t) \longleftrightarrow F(\omega)G(\omega)\\
+\end{align*} 
+\setstretch{1.25}
+
+\noindent
+\textbf{\textit{Modulaci\'on}}\\
+\indent
+\setstretch{0.05}
+\begin{align*}
+	 f(t)g(t) \longleftrightarrow \frac{1}{2\pi}[F(\omega)*G(\omega)]\\
+\end{align*} 
+\setstretch{1.25}
+
+
+\subsubsection{Transformada discreta de Fourier}
+
+La transformada de Fourier tiene la particularidad de que asume que el dominio de la funci\'on se extiende de menos infinito a infinito, esto puede parecer una contrariedad ya que en el contexto del procesamiento de señales digitales, se emplean señales con un n\'umero finito de muestras. Hay dos formas de afrontar este supuesto y hacer que la señal finita parezca una señal infinita suponiendo que hay una infinidad de muestras a la izquierda y a la derecha de la señal, en el primer caso es suponer que estas muestras tiene un valor de cero, en este caso la señal se considera discreta y a peri\'odica, el segundo caso es haciendo que la señal sea discreta y peri\'odica, suponiendo que las muestras añadidas son copias exactas y desplazadas de la señal finita.\\
+
+En el caso en que se construye una señal aperi\'odica se necesita una infinidad de ondas sinosoidales para su representaci\'on, lo cu\'al es imposible para un algoritmo computacional, mientras que en el caso de una señal peri\'odica si es posible representarla con un conjunto finito de ondas sinosoidales, este es la \'unica forma posible de implementar una transformada de Fourier computacionalmente ya que las computadoras solo pueden procesar informaci\'on finita y discreta.\\ 
+
+Es una de las herramientas mas importantes en el procesamiento de señales digitales, dentro de sus usos m\'as comunes esta, calcular el espectro de frecuencias de una señal, encontrar la respuesta de frecuencias de un sistema a trav\'es de la respuesta de impulso o viceversa, esto permite analizar los sistemas desde el dominio de las frecuencias, tambi\'en puede ser empleado como paso intermedio en procesos mas complejos, como la convoluci\'on de la Transformada r\'apida de Fourier un algoritmo eficiente para convolucionar señales.\\
+
+La transformada discreta de Fourier convierte una señal \textbf{x[ ]} en el dominio del tiempo de N muestras en una señal \textbf{X[ ]} en el dominio de las frecuencias compuesta por dos series de N/2 + 1 valores cada una, estas dos series corresponden a los valores de la amplitud de la funci\'on coseno y la funci\'on seno respectivamente, la funci\'on coseno es la parte Real de \textbf{X[ ]} y se denota por \textbf{ReX[ ]}, mientras que la funci\'on seno es la parte imaginaria de \textbf{X[ ]} y se denota como \textbf{ImX[ ]}, la suma de la parte real con la imaginaria nos da un n\'umero complejo que lleva la informaci\'on de amplitud y fase para cada arm\'onico.\\
+
+Puede ser calculada de varias formas obteniendo el mismo resultado en todos los casos, el problema se puede abordar como un conjunto de ecuaciones simultaneas, tambi\'en se puede resolver usando la correlaci\'on entre la señal y las señales trigonom\'etricas, sin embargo de entre las posibles formas de calcularla, existe un m\'etodo que es cientos de veces m\'as vel\'oz que los dem\'as y en la mayoria de los casos se prefiere por su eficiencia computacional, este m\'etodo se presenta a continucaci\'on \cite{smith}.\\
+
+\subsubsection{Transformada r\'apida de Fourier}
+
+Aqui falta.\\
+
+Existen varias formas de calcular la transformada discreta de Fourier y todas producir\'an el mismo resultado, sin embargo existe un m\'etodo que es computacionalmente mas eficiente que cualquier otro, reduciendo el tiempo de procesamiento considerablemente, este algoritmo se llama transformada r\'apida de Fourier y se atribuye su descubrimiento a J.W. Cooley y a J.W.Tukey.\\
+
+\subsection{Espectrograma}
+Graficar una señal en el dominio del tiempo no resulta muy \'util ya que no hay mucha informaci\'on que podamos extraer visualmente, en cambio en el dominio de las frecuencias si que resulta \'util, el espectrograma es una representaci\'on visual en tres dimensiones de la din\'amica de frecuencias de una señal, con esta herramienta se puede observar la evoluci\'on del contenido espectral de una señal en el tiempo, en el contexto del procesamiento de voz tambi\'en se le conoce como huella de voz (voice print).\\
+
+Para generar un espectrograma se usa un mapa de calor, en el eje x generalmente se asigna el tiempo y en el eje y las frecuencias, aunque en algunos casos estos pueden estar invertidos. El rango de frecuencias va de 0 Hz correspondiente al nivel de corriente directa de la señal, a la frecuencia de Nyquist esta es la frecuencia mas alta de la señal posterior al muestreo \cite{beigi2011}. El brillo o el color en cada coordenada representa la cantidad de energ\'ia registrada en un intervalo de frecuencias en un cierto intervalo de tiempo. La señal es dividida en bloques de un n\'umero constante de muestras, la cantidad generalmente es alguna potencia de 2 ya que de esta forma el algoritmo es mas eficiente, a cada segmento se aplica una funci\'on ventana y se obtiene el espectro arm\'onico con la transformada r\'apida de Fourier o con un banco de filtros.\\ 
+
+\begin{figure}[H]
+	\begin{center}
+	\includegraphics[scale=0.5,type=png,ext=.png,read=.png]{imagenes/espectrograma} \\
+	\caption{Resoluci\'on del espectrograma de frecuencias.}
+	\label{fig:diag_recon_locutor}
+	\end{center}
+\end{figure}
+
+La resoluci\'on del espectrograma depende de la frecuencia de muestreo la cu\'al determina la resoluci\'on de frecuencias y del n\'umero de muestras del bloque el cu\'al determina la resoluci\'on en el tiempo. Para ejemplificar esto, en la figura 3.2 se muestra el espectrograma de frecuencias de la misma señal en cuatro distintas resoluciones. Las figuras de la parte superior tienen una frecuencia de muestreo de 12KHz lo que permite tener una resoluci\'on de frecuencias de 0 a 6KHz, para las figuras de la parte inferior la frecuencia de muestreo es de 4KHz, lo que permite una resoluci\'on de frecuencias de 0Hz a 2KHz. Las figuras de la derecha tienen un tamaño de bloque de 216 muestras y las del lado derecho de 512 muestras, se puede apreciar que la resoluci\'on temporal es mejor cuando el n\'umero de muestras por bloque es menor.\\
+
+
+\section{Procesamiento de la señal de voz}
+\subsection{Detecci\'on de actividad de voz (VAD)}
+El procesamiento de la señal de voz incluye procesos que pueden ser muy demandantes computacionalmente, sin embargo en la pr\'actica la señal de voz es discontinua ya que presenta silencios entre frases, incluso en una misma frase se pueden presentar pequeños momentos de silencio, cerca de un 30$\%$ de las muestras en una grabaci\'on de audio normal son silencio, esto quiere decir que removiendo el silencio de la señal se puede lograr un aumento de la velocidad de los procesos en un porcentaje similar \cite{beigi2011}. Una forma de ahorrar recursos computacionales, es detectando estos fragmentos donde no hay señal de voz y ya se eliminarlos o ignorarlos para que no se realicen los procesos mas demandantes.\\
+
+Detecci\'on de actividad de voz hace referencia a la tarea de identificar si en una señal hay presencia de voz o no, as\'i que puede ser traducido en un problema de clasificaci\'on binaria, los segmentos en los que no hay presencia de actividad de voz pueden ser silencio, pero tambi\'en se puede incluir ruidos de ambiente como sonidos de puertas, ventanas, autos o incluso sonidos de respiraciones, carraspeo, tos, etc \cite{gold}. Es importante tomar en cuenta la naturaleza de estos segmentos ya que el tratamiento de fragmentos silencio puede ser significativamente mas sencillo que el tratamiento de otra clase de sonidos.\\
+
+Si consideramos que los fragmentos donde no hay presencia de voz son de silencio o de ruido de ambiente, el enfoque m\'as eficiente dada su sencillez y eficacia es el de definir un umbral para el nivel de energ\'ia, se asume que para los segmentos en donde no hay presencia de voz la energ\'ia de la señal aumenta considerablemente en comparaci\'on con los fragmentos de silencio, esta caracter\'istica es explotada midiendo la energ\'ia de la señal y si esta cae por debajo del umbral el fragmento analizado se considera como silencio \cite{beigi2011}.\\
+
+\begin{figure}[H]
+	\begin{center}
+	\includegraphics[scale=0.45,type=png,ext=.png,read=.png]{imagenes/vad_db} \\
+	\caption{Detecci\'on de actividad de voz con umbral de energ\'ia de -11 db.}
+	\label{fig:diag_recon_locutor}
+	\end{center}
+\end{figure}
+
+Para implementar el enfoque de umbral de energ\'ia primero es necesario calcular la energ\'ia de la señal (f\'ormula 3.9), este c\'alculo se realiza en ventanas de aproximadamente 30 ms de duraci\'on con un traslape de 50 \%, la energ\'ia de la señal se suele expresar en decibeles mediante la f\'ormula $10\log_{10}(\sigma^2(x))$, posteriormente es recomendado realizar un an\'alisis de la señal para estimar cu\'al podr\'ia ser un buen umbral, una vez definido el umbral se clasifica la señal en segmentos con actividad de voz y en segmentos sin actividad de voz (f\'ormula 3.8). En la figura 3.5 se muestra un ejemplo de detecci\'on de actividad de voz con un umbral de energ\'ia de $\theta_{silencio}$ := -11 db.\\
+
+\begin{align}  
+VAD(x) := 
+	\begin{cases}
+		0, &\quad\text{if } \sigma^2(x) < \theta_{silencio}\\
+		1, &\quad\text{if } \sigma^2(x) \ge \theta_{silencio}\\
+	\end{cases}
+\end{align}\\
+
+donde:\\
+
+\begin{align}
+   \sigma^2(x) &:= \lVert x \rVert^2  =  \sum_{k=0}^n x_k^2
+\end{align}\\
+
+Existen otros m\'etodos mas sofisticados para identificar segmentos con presencia de actividad de voz, como la correlaci\'on en la señal, m\'axima verosimilitud, redes neuronales y en general las t\'ecnicas utilizadas para el reconocimiento de voz y de locutor tambi\'en pueden ser empleadas para la detecci\'on de actividad de voz \cite{beigi2011}, estas t\'ecnicas no se presenta, ya que en este trabajo la t\'ecnica de umbral de energ\'ia es suficiente.\\
+
+\subsection{Escalas de frecuencias psicoac\'usticas}
+
+Aqui falta.\\
+
+\subsubsection{Percepci\'on auditiva}
+
+Aqui falta.\\
+
+\subsubsection{Escala Mel}
+
+Aqui falta.\\
+
+La escala de frecuencias Mel es una relacion perceptual de la frecuencia obtenida experimentalmente, en el que el observador juzga que los elementos estan separados a distancias iguales. Dado que la forma en que percibimos la frecuencia no es lineal, en la decada de 1930 se hizo un estudio con la finalidad de modelar la relación perceptual de la frecuencia, cinco sujetos fraccionaron 10 tonos a distintas frecuencias, y los valores obtenidos se utilizaron para construir una escala num\'erica proporcional a la magnitud percibida del tono. En dicho estudio por ser de caracter experimental los resultados se reportaron en una gr\'afica que relaciona la frecuencia con el tono. De dicho estudio se desarrollo la siguiente definición: 
+
+Definición Mel. Mel que es una abreviacion de la palabra melody. Es una unidad de Tono. Se define como una cent\'esima de tono de una onda simple con frecuencia de 1000 Hz y con una amplitud de -40dB.
+
+También de dicho estudio surgen las siguientes dos fórmulas: 
+
+\begin{align}
+  F_{Mels} &= \frac{1000}{\ln(1 + \frac{1000}{700})} \cdot  \ln{\left(1 + \frac{F_{Hz}}{700}\right)}\
+\end{align}
+
+\begin{align}
+  F_{Mels} &= \frac{1000}{\log(2)} \cdot \log{\left(1 + \frac{F_{Hz}}{1000}\right)}\
+\end{align}
+
+Donde F es la frecuencia en Herz y F la frecuencia en Mels. La primera gracias a O'Shaughnessy y la segunda atribuida a Fant, quienes de manera independiente ajustaron una fórmula a los datos reportados por Stevens y Volkmann.
+
+
+Es el resultado de un estudio realizado por Stevens, Volkman, Newman en 1930, y publicado en 1937 en donde se demostro experimentalmente que la relación entre frecuencia y tono no es lineal, observaron que para frecuencias abajo de los 1000 hz la relación puede considerarse como lineal y para las frecuencias superiores a los 1000 hz  puede considerarse como logaritmica. 
+
+
+Pitch.- Es una cantidad percibida relacionada a la frecuencia fundamental de vibración en un determinado lapso de tiempo, la unidad de medida del Pitch es el Mel.
+
+\subsubsection{Escala Bark}
+
+Aqui falta.\\
+
+\subsection{M\'etodos de extracci\'on de caracter\'isticas de la señal de voz}
+
+La extracci\'on de caracter\'isticas hace referencia al computo de un conjunto de variables llamadas vectores de caracter\'isticas que se calculan a partir de una señal de voz representada como serie de tiempo, de esta forma se transforma la señal de voz observada en una representaci\'on param\'etrica sobre la cu\'al se realiza el an\'alisis y procesamiento. La finalidad de la extracci\'on de caracter\'isticas es encontrar una transformaci\'on a un espacio de dimensi\'on menor que preserve la informaci\'on necesaria para poder realizar comparaciones usando medidas de similitud \cite{campbell1997}, el vector de caracter\'isticas constituye una representaci\'on comp\'acta de la señal de voz que permite generar y almacenar los modelos de locutores de forma eficiente, al mismo tiempo que reduce la dimensionalidad de los datos conservado la informaci\'on necesaria que le permita al sistema diferenciar efectivamente a los locutores.\\
+
+Las caracter\'isticas deseadas en un sistema de reconocimiento de locutor, deben poseer los siguientes atributos:
+\begin{itemize}
+	\item F\'aciles de extraer y de medir.
+	\item No deben verse afectadas por el estado f\'isico del locutor.
+	\item Deben ser consistentes en el tiempo.
+	\item No deben verse afectadas por el ruido ambiente.
+	\item Que no sean imitables.\\
+\end{itemize}
+
+Estos atributos son deseables, sin embargo ninguna parametrizaci\'on de la señal de voz posee todos los atributos mencionados anteriormente, se ha demostrado que las caracter\'isticas basadas en el an\'alisis espectral son las m\'as efectivas en los sistemas de reconocimiento autom\'atico \cite{feng}. En el contexto de los sistemas de reconocimiento de voz y de reconocimiento de locutor, las caracter\'isticas de la señal de voz basadas en coeficientes cepstrales o escalas perceptuales son ampliamente usadas, m\'etodos como el de coeficientes cepstrales de frecuencias Mel (MFCC), codificaci\'on predictiva lineal (LPC) y predicci\'on lineal perceptiva (PLP) son de los m\'as usados en procesamiento de señales de voz \cite{namrata}.\\
+
+
+\subsubsection{Coeficientes cepstrales de frecuencias Mel (MFCC)}
+
+El m\'etodo mas predominante para extraer caracter\'isticas espectrales de la señal de voz es sin lugar a dudas el m\'etodo de coeficientes cepstrales de frecuencias Mel, esta es una t\'ecnica basada en el an\'alisis espectral usando la escala de Mel, por lo que se considera un m\'etodo que trata de emular la percepci\'on auditiva humana. Los MFCC's son una parametrizaci\'on robusta ante variaciones en el habla del locutor y variaciones en las condiciones de grabaci\'on, se emplean t\'ecnicas de extracci\'on de informaci\'on similares a las usadas por los humanos, al mismo tiempo que se desenfat\'iza otra informac\'on considerada no relevante o que pueda obstruir la caracterizaci\'on de la voz \cite{namrata}.\\
+
+Una parte importante de la señal de voz es su evoluci\'on en el tiempo, para capturar esta din\'amica se incluye en el vector de caracter\'isticas las diferencias de primer y segundo orden de los MFCC's, en general las diferencia de primer y segundo orden son independientes de los MFCC's y se incluyen para modelar la din\'amica local de la señal de voz, estas diferencias son conocidas como \textit{Coeficientes Cepstrales Deltas} y \textit{Coeficientes Cepstrales Delta-Deltas} \cite{beigi2011}.\\
+
+Com\'unmente los coeficientes cepstrales de frecuencias Mel son vectores de dimensi\'on 39, ya que consisten de 13 coeficientes est\'aticos, 13 coeficientes para las diferencias de primer orden y 13 coeficientes para las diferencias de segundo orden, aunque en \cite{beigi2011} se recomienda que para las diferencias de primer orden se use un n\'umero menor de coeficientes y un n\'umero a\'un menor para los coeficientes de las diferencias de segundo orden considerando la cantidad de datos disponibles en las etapas de entrenamiento y prueba. A continuaci\'on se detallan los pasos que componen su c\'alculo:\\
+
+Poner un diagrama de los pasos\\
+
+\noindent
+\textbf{\textit{Pre-\'enfasis}}\\
+\indent
+Dadas las caracter\'isticas del sistema vocal humano, los componentes vocales en las frecuencias altas presentan reducci\'on de energ\'ia, como resultado, la energ\'ia se reduce de manera lineal, y aunque para cada locutor esta reducci\'on puede variar dependiendo de varios factores, se puede afirmar que en promedio la energ\'ia se reduce a un ritmo de 2db/kHz. Esta reducci\'on de energ\'ia genera problemas de implementaci\'on, por ejemplo si se aplica la transformada discreta de Fourier usando aritm\'etica de punto fijo la precisi\'on ser\'a muy distinta en distintas partes del espectro arm\'onco, presentando una precisi\'on menor para frecuencias altas.\\
+
+Pre-\'enfasasis es una t\'ecnica usada comunmente en el procesamiento de la señal de voz, sirve para centrar la señal al rededor del cero, aplanar el espectro arm\'onico enfatizando las frecuencias altas, y produce una señal menos susceptible a errores de precisi\'on en pasos posteriores en el procesamiento de la señal. Generalmente el pre-\'enfasis se realiza en el dominio del tiempo aplicando un filtro FIR de primer orden a la señal digitalizada x(t) de la siguiente manera:
+\begin{align}
+   y(t) &= x(t) - \alpha \cdot x(t - 1)
+\end{align}
+
+Donde el coeficiente $\alpha$ es el factor de pre-\'enfasis, este puede tomar valores entre 0.95 y 0.99, en \cite{feng} se recomienda utilizar un factor de 0.97. Hay que considerar que aplicar pre-\'enfasis excesivamente puede ocasionar problemas en consonantes fricativas, ya que estas tienen mayor energ\'ia en las frecuencias altas, y tambi\'en produce una modificaci\'on tanto perceptiva como en el modelado estad\'istico, as\'i que el factor de pre\'enfasis depender\'a de las necesidades de la aplicaci\'on e implementaci\'on del sistema.\\
+
+\noindent
+\textbf{\textit{Segmentaci\'on}}\\
+\indent
+La variedad de fonemas que contiene cualquier lenguaje es tan basta que hace que la señal de voz sea muy compleja, en general un fragmento de discurso hablado es mucho mas complicado que simplemente una consonante fricativa o una vocal sostenida, es por esto que la transformada de Fourier que se aplica com\'unmente en señales peri\'odicas o estacionarias no es aplicable para señales de voz cuyas propiedades cambian notoriamente a trav\'es del tiempo. Sin embargo se ha observado que propiedades temporales como la energ\'ia, los cruces por el cero y la correlaci\'on se pueden asumir fijas en intervalos de tiempo de entre 10 a 30 mili segundos, lo mismo pasa en el caso de las caracter\'isticas espectrales, se puede asumir que en estos lapsos cortos de tiempo el contenido espectral cambia relativamente lento y la señal puede considerarse estacionaria \cite{rabiner1987}.\\
+
+Por esta raz\'on para realizar el an\'alisis de la señal con la finalidad de obtener una buena aproximaci\'on del contenido espectral, se suele dividir en pequeños fragmentos que como se ha mencionado anteriormente suelen tener una duraci\'on entre 0.01 y 0.03 segundos, la señal es una lista de muestras indexadas, por lo tanto para convertir la duraci\'on de la señal de segundos a n\'umero de muestras se utiliza la siguiente f\'ormula:
+\begin{align}
+   N_{muestras} = \lceil segundos*f_{muestreo} \rceil
+\end{align}
+
+Es decir, el n\'umero de muestras de cada fragmento es igual al menor entero mayor o igual que los segundos multiplicados por la frecuencia de muestreo. Para cubrir la longitud total de la señal estos fragmentos se van desplazando de tal forma que haya una superposici\'on entre fragmentos vecinos, es decir el n\'umero de muestras del desplazamiento es menor que el n\'umero de muestras de cada fragmento, el desplazamiento com\'unmente varia entre el 30 y 50 \% de la duraci\'on total del fragmento. Una vez realizado este proceso, se pasa de una lista de muestras a una matriz donde el n\'umero de filas es el n\'umero de segmentos en que se dividi\'o la señal y el n\'umero de columnas es el n\'umero de muestras de cada segmento, en caso de que el \'ultimo segmento tenga menos muestras que el resto, se suele asignar al n\'umero de muestras faltantes el valor cero.\\
+
+
+Es importante elegir correctamente el tamaño de los fragmentos y el tamaño del desplazamiento, la duraci\'on promedio de un fonema es de 80 ms  por lo que podr\'ia ser un buen candidato para el tamaño de los fragmentos, sin embargo es un promedio sesgado ya que las vocales son mucho mas largas que algunas consonantes que pueden tener una longitud de 5 ms, por lo que se considera que una longitud de fragmento de entre 20 ms y 30 ms con un desplazamiento de 10 ms logra captar correctamente tanto vocales como consonantes, siendo estos valores los m\'as comunes en la pr\'actica \cite{beigi2011}.\\
+
+\noindent
+\textbf{\textit{Windowing}}\\
+\indent
+Una vez que se ha segmentado la señal, se tiene que transformar cada segmento del dominio del tiempo al dominio de las frecuencias para extraer su contenido arm\'onico, para esto es necesario aplicar la transformada discreta de Fourier. Como se ha mencionado antes, al aplicar la transformada discreta de Fourier se asume que la señal es infinita y peri\'odica y que el inicio de la señal esta unido al final de señal, en general, el valore de la primer muestra ser\'a distinto del valor de la muestra final, esto causa que al unirlos haya una discontinuidad de salto, esto generar\'a una distorsi\'on del espectro arm\'onico denominada mancha espectral o leakage, introduciendo frecuencias que no estaban presentes en la señal original.\\
+
+Para no tener este problema, se tiene que suavizar la uni\'on de las muestras inicial y final, una forma de lograr esto es aplicando una func\'on window para atenuar tanto el inicio y el final de la señal. Algunas de las funciones window mas comunes son Hamming, Hann, Triangular, Gauss, Blackman y Bartlett \cite{beigi2011}. Cada una de estas funciones tiene caracter\'isticas distintas, siendo de las mas relevantes, la forma, que tan r\'apido decaen los valores en los extremos, y los valores que toman en los extremos, ya que algunas de las funciones toman el valor cero, mientras otras a pesar de tomar valores muy pequeños, son valores distintos de cero. A continuaci\'on se mencionan algunas funciones window:\\
+
+\noindent
+\textbf{\textit{Hamming Window}}\\
+\indent
+La ventana Hamming es la funci\'on ventana mas usada en el procesamiento de voz, su ecuaci\'on esta descrita por (3.14), una de las razones por la cu\'al es tan popular es por que a pesar de que su espectro decae r\'apidamente, los arm\'onicos de frecuencias altas permanecen planos y se logra cubrir la mayor parte del espectro de una forma homog\'enea.
+\begin{align}
+   w(n) = 0.54 - 0.46 \cos(\frac{2\pi n}{N - 1})
+\end{align}
+
+\noindent
+\textbf{\textit{Hann Window}}\\
+\indent
+La ventana Hann es una variaci\'on de la ventana Hamming, la f\'ormula est\'a dada por (3.15), la mayor diferencia es que la ventana Hann toma el valor cero en sus extremos, lo que puede ser deseable en ciertas circunstancias, aunque un argumento en contra de esta caracter\'istica es que el fragmento de señal no es usado en su totalidad, en el procesamiento de voz no es problema debido a la sobreposici\'on de los fragmentos. 
+\begin{align}
+   w(n) = 0.5(1 - \cos(\frac{2\pi n }{N - 1})) 
+\end{align}
+
+\noindent
+\textbf{\textit{Blackman Window}}\\
+\indent
+La f\'ormula en (3.16) describe una familia de funci\'ones ventana llamada Blackman-Harris, cuando $\alpha = 0.16$ la funci\'on resultante se conoce como la ventana cl\'asica Blackman o simplemente la ventana Blackman. Esta funci\'on ventana conjunta lo mejor de la ventana Hamming y de la ventana Hann ya que posee un espectro que decae r\'apidamente, con un l\'obulo principal grande y l\'obulos secundarios estrechos. Estas prpiedades hacen de la ventana Blackmann una buena opci\'on para el procesamiento de voz.\\
+\begin{align}
+   w(n) = a_0 - a_1\cos(\frac{2\pi n}{N - 1}) + a_2\cos(\frac{4\pi n}{N - 1})
+\end{align}
+donde:\\
+\indent
+$a_0 = \frac{1 - \alpha}{2}$\\
+\indent
+$a_1 = \frac{1}{2}$\\
+\indent
+$a_2 = \frac{\alpha}{2}$\\
+
+\noindent
+\textbf{\textit{Power spectrum}}\\
+\indent
+
+\noindent
+\textbf{\textit{Filter bank}}\\
+\indent
+
+\noindent
+\textbf{\textit{Mean Normalization}}\\
+\indent
+
+\noindent
+\textbf{\textit{Deltas y Delta-Deltas}}\\
+\indent
+
+Como su nombre lo indica el Mel filter bank es un banco de filtros, estos filtros son triángulos idénticos y se encuentran equidistantes sobre la escala de Mel, cubriendo el espectro desde 0 Hz a la mitad de la frecuencia de sampleo, el número de filtros va de 20 a 40 dependiendo de la frecuencia de sampleo, despues estos filtros se pasan de la escala de Mel a Herz. Se convierte a Herz modificando la relación entre los filtros por que despues se aplicara al espectro armónico de una señal. Este banco de filtros busca imitar la estructura de las bandas criticas del oido humano. Genera el efecto de dbrindar mayor resolución a frecuencias bajas\\
+
+El primer paso es encontrar el mí­nimo y máximo de en la escala Mel, el mí­nimo es 0 y el máximo es la mitad de la frecuencia de sampleo en herz convertida en Mels. i.e.
+\begin{align}
+  Min &= 0\
+\end{align}
+\begin{align}
+  Max &= \frac{1000}{\ln(1 + \frac{1000}{700})} \cdot  \ln{\left(1 + \frac{\frac{SampleRate}{2}}{700}\right)}\
+\end{align}
+
+Ahora dentro de este intervalo generamos n + 2 puntos equidistantes donde n es el número de filtros:
+
+\begin{align}
+  m_{i} &= Min + i \cdot \frac{Max - Min}{n + 1}  \qquad  i = 0, ..., n + 1
+\end{align}
+
+Despu\'es convertimos a Herz
+
+\begin{align}
+   h_{i} &= \frac{1000}{\ln(1 + \frac{1000}{700})} \cdot  \ln{\left(1 + \frac{m_{i}}{700}\right)}\ \qquad  i = 0, ..., n + 1
+\end{align}
+
+
+
+\textbf{Filter bank}
+Ahora a la potencia del espectro se aplica el banco de filtro Mel, generalmente 40 filtros triangulares, como habiamos mencionado esto es para obtener caracteristicas perceptuales en la escala de audición humana
+
+\begin{align}
+   E^{X}_{i} = \sum_{k = 1}^{N} \mid X(k) \mid ^2  \cdot \psi_{i}(k)
+\end{align}
+
+Donde X(k) es la amplitud del espectro, k es el í­ndice de la frecuencia, psi es el i-esimo filtro Mel, E es la energia del banco de filtro
+
+\textbf{Logaritmo natural y la transformada de coseno discreta}
+Aplicar el logaritmo natural aproxima la relación entre intensidad del sonido y el volúmen, y tambien convierte la multiplicación de parámetros en una suma, haciendo mas eficiente su cálculo. Dado que estos coeficientes estan sumamente correlacionados y eso puede ser un inconveniente para algunos algoritmos de aprendizaje de máquina, se aplica la transformada de coseno discreta para eliminar esta correlación. 
+
+\begin{align}
+   C^{X}_{n} = \sum_{i = 1}^{M} \log(E^{X}_{i}) \cdot \cos[n \frac{(2i - 1)\pi}{2M}]
+\end{align}
+
+Finalmente, para la mayoria de las aplicaciones de reconocimiento de voz de los coeficientes cepstrales obtenidos, se toman los coeficientes de menor orden generalmente entre 13 y 20 y se deshecha el resto, ya que estos coeficientes representan la forma del tracto vocal, esto conduce a una reducción dimensional.
+
+\subsubsection{Codificaci\'on lineal predictiva (LPC)}
+
+Una de las t\'ecnicas mas poderosas y predominantes en el procesamiento de voz es el an\'alisis lineal predictivo, su importancia radica en su capacidad de estimar de manera precisa par\'ametros de voz como el tono, formantes, espectro, y las funciones del tracto vocal, as\'i como por su velocidad de computo. Esta t\'ecnica tambi\'en destaca como un m\'etodo de compresi\'on de la señal de voz, ya que puede reducir la cantidad de datos necesarios para su representaci\'on, lo que imp\'acta de forma positiva en procesos de transmisi\'on y almacenamiento. \\
+
+Speech model.\\
+Esta t\'ecnica esta relacionada con el modelo de producci\'on y s\'intesis de voz
+
+\cite{ney}
+\cite{gold}
+\cite{campbell1997}
+\cite{rabiner1987}
+\cite{beigi2011}\\
+
+
+\subsubsection{Predicci\'on lineal perceptiva (PLP)}
+
+
+

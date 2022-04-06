@@ -1,0 +1,80 @@
+\chapter{Introducci'on} \label{chap:introduccion}
+
+El reconocimiento de locutor es una rama de la inteligencia artificial, que relaciona la psicoac\'ustica, la fisiologia de la voz, el procesamiento de señales digitales y el aprendizaje de m\'aquina. En los problemas relacionados a este campo se busca ya sea identificar, detectar o verificar la identidad de una persona a trav\'es del registro y el an\'alisis de la señal de voz.\\
+
+Esta tarea ha sido de inter\'es en el \'area de las telecomunicaciones desde los años 60 \cite{history2004} teniendo como limitantes la capacidad de almacenamiento y procesamiento de los dispositivos de la \'epoca, sin embargo en las \'ultimas d\'ecadas esto ha dejado de ser un problema y con el desarrollo de la rob\'otica y de las aplicaciones en dispositivos m\'oviles, la necesidad de mejorar la comunicaci\'on hombre-m\'aquina ha hecho que el reconocimiento de voz y el reconocimiento de locutor cobren gran relevancia. \\
+
+El poder reconocer o identificar de forma autom\'atica la identidad de las personas a trav\'es de la señal de voz, podr\'a contribuir entre otras cosas en el desarrollo de sistemas de comunicaci\'on inteligentes capaces de ofrecer experiencias personalizadas. Con esto en mente, en la medida en que los sistemas de reconocimiento de locutor mejoren y sean capaces de extraer de manera autom\'atica la informaci\'on que se encuentra codificada en la señal de voz, se ir\'an refinando, ofreciendo una interacci\'on m\'as natural a los usuarios, ya que tendr\'an mayor flexibilidad y funcionalidades.\\
+
+Algunas aplicaciones del reconocimiento de locutor son: control de accesos, reconocimiento forense, gestión de audio, refuerzos de seguridad, entre otros. Puede llegar a ser muy útil y tener varias aplicaciones prácticas y en general a mejorar la interacci\'on hombre-m\'aquina, por ejemplo, se ha comprobado que dentro de las biometr\'ias es la que tiene mayor aceptación entre  las personas y es la m\'as pr\'actica de realizar a distancia gracias a la telefon\'ia m\'ovil. Tambi\'en resulta de gran ayuda en robots de servicio, robusteciendo la identificaci\'on de personas, ya que en algunas situaciones el reconocimiento facial no es posible, por ejemplo en el caso en que el robot se encuentre en otra habitaci\'on o este realizando una tarea que requiera el uso de la c\'amara o en situaciones donde la iluminaci\'on sea muy d\'ebil, en estos casos, el reconocimiento de locutor ayudar\'a a que el robot sepa quien se esta comunicando con el en todo momento.\\
+
+Los sistemas de reconocimiento de locutor, consisten en registrar la grabaci\'on de voz de un grupo de usuarios conocidos, y extraer de la señal de voz un conjunto de coeficientes que son caracter\'isticos e idealmente \'unicos, propios de la persona que los produce, estos coeficientes se usan para generar un modelo biom\'etrico de cada usuario. Posteriormente se ingresan al sistema otras grabaciones de voz de usuarios de indentidad desconocida, que pueden o no estar registrados, y el sistema realiza el mismo proceso de extracci\'on de coeficientes caracter\'isticos y contrasta el nuevo modelo con los modelos previamente registrados, se mide la relaci\'on que guarda la señal con los modelos registrados y dependiendo del nivel de similitud, el sistema puede realizar alguna afirmaci\'on sobre la identidad del locutor al que pertenece.\\ 
+
+En cualquier sistema de reconocimiento de locutor vamos a encontrar dos m\'odulos que son fundamentales para su funcionamiento, el m\'odulo de extracci\'on de caracter\'isticas y el m\'odulo de comparaci\'on de patrones. En el m\'odulo de extracci\'on de caracter\'isticas se busca extraer de la señal de voz informaci\'on que nos permita crear un modelo \'unico para cada locutor, y posteriormente en el m\'odulo de comparaci\'on de patrones se usan estas caracter\'isticas y se contrastan entre si con la finalidad de identificar si la señal de voz pertenece a alguno de los locutores previamente registrados en el sistema.\\
+
+En el m\'odulo de comparaci\'on de patrones, se utilizan t\'ecnicas de reconocimiento de patrones y aprendizaje de m\'aquina supervisado, de las mas usadas en el reconocimiento de locutor son: Modelos de mezclas de Gaussianas o GMM (Gaussian Mixture Models), los modelos ocultos de Markov o HMM (Hidden Markov Modeling), y la cuatizaci\'on de vectores o VQ (Vector Quantization), estas son las t\'ecnicas que mas aparecen en trabajos previos, como se puede observar en la cronolog\'ia del reconocimiento de locutor que aparece en \cite{campbell1997}.\\
+
+Para el caso del m\'odulo de extracci\'on de caracter\'isticas, algunas de las representaciones de la señal de voz mas utilizadas son, los coeficientes cepstrales de freciencias Mel o MFCC (Mel frequency cepstral coefficients) y los bancos de filtros de escala Mel o MFB (Mel Filter Banks) estos se basan en la forma en que funciona la percepci\'on auditiva humana, los c\'odigos de predicci\'on linear o LPC (Linear predictive coding) que est\'an basados en la forma en que la voz humana es producida, y la predicci\'on linear perceptual o  PLP (Perceptual linear predictive) que son una combinaci\'on de los anteriores. Aunque no son todas las representaciones que existen, son las que se mencionan con mayor frecuencia en la bibliograf\'ia \cite{beigi2011}.\\
+
+Estas representaciones se obtienen a trav\'es de varios pasos que implican distintos c\'alculos y ajustes lo que resulta en una cantidad considerable de par\'ametros a definir, los distintos autores dan recomendaciones de que par\'ametros utilizar en ciertos contextos lo cu\'al resulta \'util en la mayor\'ia de casos, pero como se puede apreciar, las posibles combinaciones de modelos de clasificaci\'on, de representaciones de la señal de voz y de los par\'ametros a definir puede resultar abrumadora a la hora de diseñar un sistema de reconocimiento de locutor.\\ 
+
+En este trabajo se realiza un estudio comparativo de las t\'ecnicas de representaci\'on de la señal de voz MFCC, MFB, LPC y PLP explorando su espacio param\'etrico, utilizando los modelos de reconocimiento de patrones GMM y VQ, evaluando su rendimiento en la tarea de identificaci\'on de locutor para cada caso, con la finalidad de brindar criterios para la elecci\'on de la configuraci\'on en sistemas de reconocimiento de locutor en trabajos futuros.\\
+
+
+
+
+\medskip
+
+\section{Objetivos} \label{sect:objetivos}
+
+\subsection{Objetivo general} \label{subsec:objetivo_general}
+
+El objetivo general de este proyecto es:\\
+
+Dado un sistema de reconocimiento de locutor tener los criterios suficientes para elegir el tipo de caracterí­sticas acústicas que se utilizarán, así­ como el valor de los parámetros que se ajusten mejor a la aplicacion con base en las necesidades del sistema mismo. 
+\medskip
+
+\subsection{Objetivos específicos} \label{subsec:objetivos_especificos}
+
+Los objetivos específicos para este proyecto son:\\
+
+\begin{itemize}
+\item
+Implementar los principales algoritmos de extracci\'on de caracter\'isticas ac\'usticas  (MFCC, LPC, PLP).
+\item
+Comprender el funcionamiento de los principales algoritmos de clasificaci\'on usados en el reconocimiento de locutor (GMM, VQ).
+\item
+Explorar el espacio param\'etrico de las t\'ecnicas de extracci\'on de caracter\'isticas ac\'usticas.
+\end{itemize}
+\medskip
+
+
+\section{Planteamiento del problema} \label{sect:problema}
+
+En algunos casos teniendo claros los criterios a considerar para el diseño del sistema, puede no ser tan f\'acil decidir la configuraci\'on de los m\'odulos que hemos mencionado, lo que puede resultar en un tiempo de desarrollo prolongado en donde se hagan pruebas con distintas configuraciones buscando la mas adecuada, o en un sistema no \'optimo usando una configuraci\'on que no est\'e suficientemente justificada.\\
+
+La intención de este trabajo, es presentar un resumen de varias caracterí­sticas acústicas en un espacio variado de parámetros contrastadas con algunos de los modelos de clasificación mas usados, con la finalidad de poder tomar una decisión a priori justificando algunos criterios de desempeño. 
+\medskip
+
+
+\section{Motivación} \label{sect:motivacion}
+
+Uno de los problemas que surge en el diseño de un sistema de reconocimiento de locutor, es en la fase de la extracci\'on de caracter\'isticas, ya que durante el desarrollo de esta disciplina se han utilizado varias t\'ecnicas que hacen enf\'asis en distintas propiedades de la voz humana y de la percepci\'on de la voz, as\'i como en m\'etodos computacionales de procesamiento de señales digitales, esto por la necesidad de reducir la dimensi\'on de los datos, desechando la mayor cantidad de informaci\'on posible y a su vez conservado informaci\'on suficiente y relevante que nos ayude a hacer una correcta diferenciaci\'on entre los usuarios.\\
+
+La implementaci\'on de estas t\'ecnicas de extracci\'on de caracter\'isticas se componen de varias fases, en donde se aplican funciones que van transformado la señal de manera que sea mas f\'acil extraer informaci\'on relevante. Cada una de estas funciones requiere el ajuste de un conjunto de par\'ametros, lo que genera la necesidad de realizar un ajuste de un conjunto de m\'ultlipes par\'ametros, esto con la finalidad de optimizar el funcionamiento en varios \'ambitos, como lo son: tener una fiel representaci\'on de la señal, una reducci\'on considerable de la dimensi\'on de los datos y en algunos casos se requiere que el tiempo de procesamiento no sea demasiado largo, esto es importante ya que un mal ajuste de los par\'ametros puede resultar en una mala respuesta del sistema.\\
+
+Como se ha mencionado anteriormente, despu\'es de la extracci\'on de caracter\'isticas, otro m\'odulo fundamental en cualquier sistema de reconocimiento de locutor es el de reconocimiento de patrones, ya que es el que compara las caracter\'isticas extraidas y permite diferenciar la identidad de los distintos usuarios. En esta etapa tambi\'en se tiene que tomar la decisi\'on de cual es el algoritmo de clasificaci\'on mas eficiente, tambi\'en se pueden emplear distintos criterios para decidir cual es mejor, como lo es: que  sea el mas preciso, que sea f\'acil de implementar o de interpretar o que sea r\'apido.\\
+
+Por lo anterior, se considera que una buena elecci\'on del tipo de caracter\'isticas que se van a extraer de la señal de voz, un ajuste \'optimo de los par\'ametros, en conjunto con una buena elecci\'on del algoritmo de clasificaci\'on, ayuda a generar un sistema mas robusto.\\
+
+
+
+
+\section{Hipótesis} \label{sect:hipotesis}
+
+Se asume que en distintas aplicaciones se tienen objetivos especí­ficos mas allá de hacer una correcta clasificación, como podrí­an ser la velocidad en el procesamiento de la señal de voz, la sencillez en la implementación o el espacio de almacenamiento. La hipótesis es que podemos encontrar las caracterí­sticas acústicas con el ajuste de parámetros mas adecuado según los objetivos y necesidades particulares para cada aplicación.
+
+\section{Estructura de la tesis} \label{sect:estructura}
+
+La forma en que se exponen los temas en este trabajo es la siguiente: En el ca\'itulo 2 se presenta de forma breve y general la teor\'ia del reconocimiento de locutor, en el cap\'itulo 3 se exponen temas relacionados con procesamiento de audio y las t\'ecnicas de representaci\'on de la señal ac\'usticas que ser\'an utilizadas posteriormente, en el cap\'itulo 4 se presentan los clasificadores que se utilizaran, as\'i como las m\'etricas con que se evaluar\'an los resultados, en el cap\'itulo 5 se presenta el estado del arte en reconocimiento de locutores, en el cap\'itulo 6 se describe la metodolog\'ia que se utilizar\'a, en el cap\'itulo 7 se presentan los resultados y la discusi\'on y finalmente en el cap\'itulo 8 se dan las conclusiones del trabajo y se proponen posibles trabajos futuros.\\
+
